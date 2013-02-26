@@ -30,6 +30,7 @@ Author URI: http://www.codeforthepeople.com/
 defined( 'ABSPATH' ) or die();
 
 require_once( dirname( __FILE__ ) . '/class-plugin.php' );
+require_once( dirname( __FILE__ ) . '/class-answers-simple.php' );
 
 /**
  * Decision Trees
@@ -139,8 +140,8 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 * @author Simon Wheatley
 	 **/
 	function action_add_meta_boxes( $post_type, $post ) {
-		// if ( 'decision_tree' != $post_type )
-		// 	return;
+		if ( 'decision_tree' != $post_type )
+			return;
 		add_meta_box( 'cftp_dt_answers', __( 'Answers', 'cftp_dt' ), array( $this, 'callback_answers_meta_box' ), 'decision_tree', 'advanced', 'default' );
 	}
 
@@ -156,7 +157,9 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 * @author Simon Wheatley
 	 **/
 	function callback_answers_meta_box( $post, $box ) {
-
+		$vars = array();
+		$vars[ 'answer_providers' ] = apply_filters( 'cftp_dt_answer_providers', array(), $post->ID );
+		$this->render_admin( 'meta-box-answers.php', $vars );
 	}
 
 	// METHODS
