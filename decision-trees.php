@@ -6,6 +6,8 @@ Description: Provides a custom post type to create decision trees in WordPress
 Version: 1.0
 Author: Code for the People
 Author URI: http://www.codeforthepeople.com/ 
+Text Domain: cftp_dt
+Domain Path: /languages/
 */
 
 /*  Copyright 2013 Code for the People Ltd
@@ -52,13 +54,12 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 * 
 	 * @access @static
 	 * 
-	 * @return void
+	 * @return CFTP_Decision_Trees
 	 */
 	static public function init() {
 		static $instance = false;
 
 		if ( ! $instance ) {
-			load_plugin_textdomain( 'cftp_dt', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 			$instance = new CFTP_Decision_Trees;
 		}
 
@@ -95,6 +96,9 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 * @author Simon Wheatley
 	 **/
 	function action_init() {
+
+		load_plugin_textdomain( 'cftp_dt', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+
 		$args = array(
 			'labels' => array(
 				'label' => __( 'Decision Tree', 'cftp_dt' ),
