@@ -8,13 +8,13 @@
 	margin-bottom: 10px;
 }
 
-.edit_answer .answer_title {
+.edit_answer .answer_field {
 	float: left;
 	width: 49%;
 	margin-right: 2%;
 }
 
-.edit_answer .answer_field {
+.edit_answer .answer_title {
 	float: left;
 	width: 49%;
 }

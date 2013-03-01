@@ -80,10 +80,14 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 **/
 	public function __construct() {
 
+		# Actions
 		add_action( 'init',                  array( $this, 'action_init' ) );
 		add_action( 'add_meta_boxes',        array( $this, 'action_add_meta_boxes' ), 10, 2 );
 		add_action( 'save_post',             array( $this, 'save_post' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_assets' ) );
+
+		# Filters
+		add_filter( 'the_content',           array( $this, 'the_content' ) );
 
 		$this->version = 1;
 
@@ -171,57 +175,65 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 
 		$answer_page_ids = array();
 
-		foreach ( array_values( $_POST['cftp_dt_edit'] ) as $id => $answers ) {
-			foreach ( $answers as $answer_type => $answer ) {
+		if ( isset( $_POST['cftp_dt_edit'] ) ) {
 
-				$answer_meta = array();
+			foreach ( array_values( $_POST['cftp_dt_edit'] ) as $id => $answers ) {
+				foreach ( $answers as $answer_type => $answer ) {
 
-				$page = get_post( $answer['page_id'] );
+					$answer_meta = array();
 
-				$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
-				$answer_page_ids[] = $page->ID;
+					$page = get_post( $answer['page_id'] );
 
-				foreach ( $answer_meta as $k => $v )
-					update_post_meta( $page->ID, $k, $v );
+					$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
+					$answer_page_ids[] = $page->ID;
 
+					foreach ( $answer_meta as $k => $v )
+						update_post_meta( $page->ID, $k, $v );
+
+				}
 			}
+
 		}
 
-		foreach ( array_values( $_POST['cftp_dt_add'] ) as $id => $answers ) {
-			foreach ( $answers as $answer_type => $answer ) {
+		if ( isset( $_POST['cftp_dt_add'] ) ) {
 
-				if ( !isset( $answer['page_title'] ) or empty( $answer['page_title'] ) ) {
-					if ( isset( $answer['text'] ) and !empty( $answer['text'] ) )
-						$answer['page_title'] = $answer['text'];
-					else
-						continue;
+			foreach ( array_values( $_POST['cftp_dt_add'] ) as $id => $answers ) {
+				foreach ( $answers as $answer_type => $answer ) {
+
+					if ( !isset( $answer['page_title'] ) or empty( $answer['page_title'] ) ) {
+						if ( isset( $answer['text'] ) and !empty( $answer['text'] ) )
+							$answer['page_title'] = $answer['text'];
+						else
+							continue;
+					}
+
+					$answer_meta = array();
+
+					$title = trim( $answer['page_title'] );
+					$page  = get_page_by_title( $title, OBJECT, $this->post_type );
+
+					if ( !$page ) {
+						$this->no_recursion = true;
+						$page_id = wp_insert_post( array(
+							'post_title'  => $title,
+							'post_type'   => $this->post_type,
+							'post_status' => 'draft',
+							'post_parent' => $post->ID,
+						) );
+						$this->no_recursion = false;
+						$page = get_post( $page_id );
+					}
+
+					$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
+					$answer_meta['_cftp_dt_answer_type']  = $answer_type;
+					$answer_page_ids[] = $page->ID;
+
+					foreach ( $answer_meta as $k => $v )
+						update_post_meta( $page->ID, $k, $v );
+
 				}
-
-				$answer_meta = array();
-
-				$title = trim( $answer['page_title'] );
-				$page  = get_page_by_title( $title, OBJECT, $this->post_type );
-
-				if ( !$page ) {
-					$this->no_recursion = true;
-					$page_id = wp_insert_post( array(
-						'post_title'  => $title,
-						'post_type'   => $this->post_type,
-						'post_status' => 'draft',
-						'post_parent' => $post->ID,
-					) );
-					$this->no_recursion = false;
-					$page = get_post( $page_id );
-				}
-
-				$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
-				$answer_meta['_cftp_dt_answer_type']  = $answer_type;
-				$answer_page_ids[] = $page->ID;
-
-				foreach ( $answer_meta as $k => $v )
-					update_post_meta( $page->ID, $k, $v );
-
 			}
+
 		}
 
 		update_post_meta( $post->ID, '_cftp_dt_answers', $answer_page_ids );
@@ -246,6 +258,30 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 			$this->plugin_ver( 'admin.js' )
 		);
 
+
+	}
+
+	function the_content( $content ) {
+
+		global $post;
+
+		if ( $this->post_type != $post->post_type )
+			return $content;
+
+		$answers = cftp_dt_get_post_answers( $post->ID );
+
+		if ( empty( $answers ) )
+			return $content;
+
+		$vars = array();
+		$vars[ 'answers' ] = $answers;
+		$vars[ 'answer_providers' ] = $this->answer_providers = apply_filters( 'cftp_dt_answer_providers', array(), $post->ID );
+
+		ob_start();
+		$this->render( 'content.php', $vars );
+		$add = ob_get_clean();
+
+		return $content . $add;
 
 	}
 

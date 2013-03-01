@@ -96,10 +96,13 @@ class CFTP_DT_Answers_Simple {
 	 *
 	 * @access public
 	 * 
-	 * @return void
+	 * @return string
 	 **/
-	public function get_answer() {
-		
+	public function get_answer( $answer ) {
+		return sprintf( '<a class="cftp_dt_answer_link" href="%1$s">%2$s</a>',
+			get_permalink( $answer->get_post()->ID ),
+			$answer->get_answer_value()
+		);
 	}
 
 
