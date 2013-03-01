@@ -80,18 +80,31 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 **/
 	public function __construct() {
 
+		add_action( 'admin_init',            array( $this, 'action_admin_init' ) );
 		add_action( 'init',                  array( $this, 'action_init' ) );
 		add_action( 'add_meta_boxes',        array( $this, 'action_add_meta_boxes' ), 10, 2 );
 		add_action( 'save_post',             array( $this, 'save_post' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_assets' ) );
 
-		$this->version = 1;
+		$this->version = 2;
 
 		parent::__construct( __FILE__ );
 	}
 
 	// HOOKS
 	// =====
+	
+	/**
+	 * undocumented function
+	 *
+	 * @action init
+	 *
+	 * @return void
+	 * @author Simon Wheatley
+	 **/
+	function action_admin_init() {
+		$this->maybe_update();
+	}
 	
 	/**
 	 * undocumented function
@@ -318,9 +331,9 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		}
 
 		// Flush the rewrite rules
-		if ( $version < 1 ) {
-			// Nothing
-			error_log( "CFTP DT: Installed" );
+		if ( $version < 2 ) {
+			flush_rewrite_rules();
+			error_log( "CFTP DT: Flush rewrite rules" );
 		}
 
 		// N.B. Remember to increment $this->version in self::__construct above when you add a new IF
