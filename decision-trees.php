@@ -167,7 +167,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		if ( $this->post_type != $post->post_type )
 			return;
 
-		if ( isset( $_POST['cftp_dt_post_parent'] ) ) {
+		if ( isset( $_POST["cftp_dt_post_{$post_id}_parent"] ) ) {
 
 			# See: http://core.trac.wordpress.org/ticket/8592
 			# A page with a non-published parent will get its parent removed
@@ -177,7 +177,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 			$this->no_recursion = true;
 			wp_update_post( array(
 				'ID'          => $post->ID,
-				'post_parent' => $_POST['cftp_dt_post_parent'],
+				'post_parent' => absint( $_POST["cftp_dt_post_{$post_id}_parent"] ),
 			) );
 			$this->no_recursion = false;
 

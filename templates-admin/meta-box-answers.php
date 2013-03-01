@@ -1,6 +1,6 @@
 <?php defined( 'ABSPATH' ) or die(); ?>
 
-<input type="hidden" name="cftp_dt_post_parent" value="<?php echo absint( $post->post_parent ); ?>" />
+<input type="hidden" name="cftp_dt_post_<?php echo absint( $post->ID ); ?>_parent" value="<?php echo absint( $post->post_parent ); ?>" />
 
 <?php if ( !empty( $answer_providers ) ) : ?>
 
