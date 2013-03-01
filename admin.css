@@ -1,0 +1,29 @@
+
+.add_answer {
+	display: none;
+}
+
+.edit_answer {
+	overflow: auto;
+	margin-bottom: 10px;
+}
+
+.edit_answer .answer_title {
+	float: left;
+	width: 49%;
+	margin-right: 2%;
+}
+
+.edit_answer .answer_field {
+	float: left;
+	width: 49%;
+}
+
+.edit_answer .regular-text {
+	width: 98%;
+}
+
+#pageparentdiv p:first-child,
+#parent_id {
+	display: none;
+}

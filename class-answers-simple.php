@@ -46,7 +46,7 @@ class CFTP_DT_Answers_Simple {
 	 * @return void
 	 */
 	static public function filter_answer_providers( $answers, $post_id ) {
-		$answers[] = self::init( $post_id );
+		$answers['simple'] = self::init( $post_id );
 		return $answers;
 	}
 	
@@ -68,8 +68,27 @@ class CFTP_DT_Answers_Simple {
 	 * 
 	 * @return void
 	 **/
-	public function form() {
-		echo "<p>Form for $this->post_id</p>";
+	public function get_edit_form( $id, $answer ) {
+
+		return sprintf( '<input type="text" class="regular-text" name="cftp_dt_edit[%s][simple][text]" placeholder="%s" value="%s" />',
+			$id,
+			__( 'Answer link text', 'cftp_dt' ),
+			esc_attr( $answer->get_answer_value() )
+		);
+
+	}
+	
+	/**
+	 * @TODO
+	 *
+	 * @access public
+	 * 
+	 * @return void
+	 **/
+	public function get_add_form() {
+		return sprintf( '<input type="text" class="regular-text" name="cftp_dt_new[simple][text]" placeholder="%s" />',
+			__( 'Answer link text', 'cftp_dt' )
+		);
 	}
 	
 	/**

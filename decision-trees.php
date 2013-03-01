@@ -49,6 +49,10 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 **/
 	public $version;
 	
+	public $post_type = 'decision_tree';
+
+	public $no_recursion = false;
+
 	/**
 	 * Singleton stuff.
 	 * 
@@ -76,8 +80,10 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 **/
 	public function __construct() {
 
-		add_action( 'init', array( $this, 'action_init' ) );
-		add_action( 'add_meta_boxes', array( $this, 'action_add_meta_boxes' ), 10, 2 );
+		add_action( 'init',                  array( $this, 'action_init' ) );
+		add_action( 'add_meta_boxes',        array( $this, 'action_add_meta_boxes' ), 10, 2 );
+		add_action( 'save_post',             array( $this, 'save_post' ), 10, 2 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_assets' ) );
 
 		$this->version = 1;
 
@@ -127,10 +133,120 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 			'rewrite' => true,
 			'query_var' => 'help',
 			'delete_with_user' => false,
-			'supports' => array( 'title', 'editor' ),
+			'supports' => array( 'title', 'editor', 'page-attributes' ),
 		);
 		$args = apply_filters( 'cftp_dt_cpt_args', $args );
-		$cpt = register_post_type( 'decision_tree', $args );
+		$cpt = register_post_type( $this->post_type, $args );
+	}
+
+	function save_post( $post_id, $post ) {
+
+		if ( $this->no_recursion )
+			return;
+		if ( wp_is_post_revision( $post_id ) )
+			return;
+		if ( wp_is_post_autosave( $post_id ) )
+			return;
+		if ( $this->post_type != $post->post_type )
+			return;
+
+		if ( isset( $_POST['cftp_dt_post_parent'] ) ) {
+
+			# See: http://core.trac.wordpress.org/ticket/8592
+			# A page with a non-published parent will get its parent removed
+			# when you save the post because it won't be listed in the post parent
+			# dropdown. We'll fix that manually.
+
+			$this->no_recursion = true;
+			wp_update_post( array(
+				'ID'          => $post->ID,
+				'post_parent' => $_POST['cftp_dt_post_parent'],
+			) );
+			$this->no_recursion = false;
+
+		}
+
+		if ( !isset( $_POST['cftp_dt_add'] ) and !isset( $_POST['cftp_dt_edit'] ) )
+			return;
+
+		$answer_page_ids = array();
+
+		foreach ( array_values( $_POST['cftp_dt_edit'] ) as $id => $answers ) {
+			foreach ( $answers as $answer_type => $answer ) {
+
+				$answer_meta = array();
+
+				$page = get_post( $answer['page_id'] );
+
+				$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
+				$answer_page_ids[] = $page->ID;
+
+				foreach ( $answer_meta as $k => $v )
+					update_post_meta( $page->ID, $k, $v );
+
+			}
+		}
+
+		foreach ( array_values( $_POST['cftp_dt_add'] ) as $id => $answers ) {
+			foreach ( $answers as $answer_type => $answer ) {
+
+				if ( !isset( $answer['page_title'] ) or empty( $answer['page_title'] ) ) {
+					if ( isset( $answer['text'] ) and !empty( $answer['text'] ) )
+						$answer['page_title'] = $answer['text'];
+					else
+						continue;
+				}
+
+				$answer_meta = array();
+
+				$title = trim( $answer['page_title'] );
+				$page  = get_page_by_title( $title, OBJECT, $this->post_type );
+
+				if ( !$page ) {
+					$this->no_recursion = true;
+					$page_id = wp_insert_post( array(
+						'post_title'  => $title,
+						'post_type'   => $this->post_type,
+						'post_status' => 'draft',
+						'post_parent' => $post->ID,
+					) );
+					$this->no_recursion = false;
+					$page = get_post( $page_id );
+				}
+
+				$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
+				$answer_meta['_cftp_dt_answer_type']  = $answer_type;
+				$answer_page_ids[] = $page->ID;
+
+				foreach ( $answer_meta as $k => $v )
+					update_post_meta( $page->ID, $k, $v );
+
+			}
+		}
+
+		update_post_meta( $post->ID, '_cftp_dt_answers', $answer_page_ids );
+
+	}
+
+	function admin_assets() {
+
+		if ( $this->post_type != get_current_screen()->post_type )
+			return;
+
+		wp_enqueue_style(
+			'cftp-dt-admin',
+			$this->plugin_url( 'admin.css' ),
+			array( 'wp-admin' ),
+			$this->plugin_ver( 'admin.css' )
+		);
+		wp_enqueue_script(
+			'cftp-dt-admin',
+			$this->plugin_url( 'admin.js' ),
+			array( 'jquery' ),
+			$this->plugin_ver( 'admin.js' )
+		);
+
+
 	}
 
 	/**
@@ -144,9 +260,9 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 * @author Simon Wheatley
 	 **/
 	function action_add_meta_boxes( $post_type, $post ) {
-		if ( 'decision_tree' != $post_type )
+		if ( $this->post_type != $post_type )
 			return;
-		add_meta_box( 'cftp_dt_answers', __( 'Answers', 'cftp_dt' ), array( $this, 'callback_answers_meta_box' ), 'decision_tree', 'advanced', 'default' );
+		add_meta_box( 'cftp_dt_answers', __( 'Answers', 'cftp_dt' ), array( $this, 'callback_answers_meta_box' ), $this->post_type, 'advanced', 'default' );
 	}
 
 	// CALLBACKS
@@ -162,7 +278,9 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 **/
 	function callback_answers_meta_box( $post, $box ) {
 		$vars = array();
-		$vars[ 'answer_providers' ] = apply_filters( 'cftp_dt_answer_providers', array(), $post->ID );
+		$vars[ 'answers' ] = cftp_dt_get_post_answers( $post->ID );
+		# This filter needs to go somewhere else instead of being run in the meta box:
+		$vars[ 'answer_providers' ] = $this->answer_providers = apply_filters( 'cftp_dt_answer_providers', array(), $post->ID );
 		$this->render_admin( 'meta-box-answers.php', $vars );
 	}
 
@@ -211,7 +329,56 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		update_option( $option_name, $this->version );
 		error_log( "CFTP DT: Done upgrade, now at version " . $this->version );
 	}
+
+	function get_answer_provider( $type ) {
+		if ( isset( $this->answer_providers[$type] ) )
+			return $this->answer_providers[$type];
+		else
+			return false;
+	}
+
 }
 
 // Initiate the singleton
 CFTP_Decision_Trees::init();
+
+function cftp_dt_get_post_answers( $post_id = null ) {
+
+	$post = get_post( $post_id );
+
+	$answers = get_post_meta( $post->ID, '_cftp_dt_answers', true );
+
+	if ( empty( $answers ) )
+		$answers = array();
+
+	foreach ( $answers as &$answer )
+		$answer = new CFTP_DT_Answer( $answer );
+
+	return $answers;
+
+}
+
+
+class CFTP_DT_Answer {
+
+	function __construct( $post_id ) {
+		$this->post = get_post( $post_id );
+	}
+
+	function get_post() {
+		return $this->post;
+	}
+
+	function get_page_title() {
+		return get_the_title( $this->post->ID );
+	}
+
+	function get_answer_value() {
+		return get_post_meta( $this->post->ID, '_cftp_dt_answer_value', true );
+	}
+
+	function get_answer_type() {
+		return get_post_meta( $this->post->ID, '_cftp_dt_answer_type', true );
+	}
+
+}
