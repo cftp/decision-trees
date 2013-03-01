@@ -3,7 +3,7 @@
 Plugin Name: Decision Trees
 Plugin URI: https://github.com/cftp/decision-trees
 Description: Provides a custom post type to create decision trees in WordPress
-Version: 1.0
+Version: 1.1
 Author: Code for the People
 Author URI: http://www.codeforthepeople.com/ 
 Text Domain: cftp_dt
