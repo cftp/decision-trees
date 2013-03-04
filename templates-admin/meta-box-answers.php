@@ -39,6 +39,7 @@
 				</div>
 				<div class="answer_title">
 					<?php echo esc_html( $answer->get_page_title() ); ?>
+					<a href="<?php echo get_edit_post_link( $answer->get_post()->ID ); ?>">edit</a>
 				</div>
 			</div>
 
