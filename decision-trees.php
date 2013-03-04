@@ -234,6 +234,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 							'post_parent' => $post->ID,
 						) );
 						$this->no_recursion = false;
+						wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
 						$page = get_post( $page_id );
 					}
 
