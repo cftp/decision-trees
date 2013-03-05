@@ -84,11 +84,11 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		add_action( 'admin_init',            array( $this, 'action_admin_init' ) );
 		add_action( 'init',                  array( $this, 'action_init' ) );
 		add_action( 'add_meta_boxes',        array( $this, 'action_add_meta_boxes' ), 10, 2 );
-		add_action( 'save_post',             array( $this, 'save_post' ), 10, 2 );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_assets' ) );
+		add_action( 'save_post',             array( $this, 'action_save_post' ), 10, 2 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'action_admin_enqueue_scripts' ) );
 
 		# Filters
-		add_filter( 'the_content',           array( $this, 'the_content' ) );
+		add_filter( 'the_content',           array( $this, 'filter_the_content' ) );
 
 		$this->version = 2;
 
@@ -156,7 +156,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		$cpt = register_post_type( $this->post_type, $args );
 	}
 
-	function save_post( $post_id, $post ) {
+	function action_save_post( $post_id, $post ) {
 
 		if ( $this->no_recursion )
 			return;
@@ -254,7 +254,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 
 	}
 
-	function admin_assets() {
+	function action_admin_enqueue_scripts() {
 
 		if ( $this->post_type != get_current_screen()->post_type )
 			return;
@@ -275,7 +275,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 
 	}
 
-	function the_content( $content ) {
+	function filter_the_content( $content ) {
 
 		global $post;
 
