@@ -284,19 +284,12 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 
 		$answers = cftp_dt_get_post_answers( $post->ID );
 
-		if ( empty( $answers ) )
-			return $content;
-
 		$vars = array();
+		$vars[ 'content' ] = $content;
 		$vars[ 'answers' ] = $answers;
 		$vars[ 'answer_providers' ] = $this->answer_providers = apply_filters( 'cftp_dt_answer_providers', array(), $post->ID );
 
-		ob_start();
-		$this->render( 'content.php', $vars );
-		$add = ob_get_clean();
-
-		return $content . $add;
-
+		return $this->capture( 'content.php', $vars );
 	}
 
 	/**
