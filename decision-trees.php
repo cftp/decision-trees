@@ -285,14 +285,32 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 
 		$answers = cftp_dt_get_post_answers( $post->ID );
 
-		$vars = array();
+		$start = false;
+		$previous_answers = array();
+		if ( $post->post_parent ) {
+			$previous_answers = array_reverse( get_post_ancestors( $post->ID ) );
+			$previous_answers[] = get_the_ID();
+			$start = array_shift( $previous_answers );
+			array_shift( $previous_answers );
+			$start = get_post( $start );
+		}
+
 		remove_filter( 'the_title', array( $this, 'filter_the_title' ), 0, 2 );
+
+		$vars = array();
+		$vars[ 'start' ] = $start;
+		$vars[ 'previous_answers' ] = $previous_answers;
 		$vars[ 'title' ] = get_the_title( $post->ID );
-		add_filter( 'the_title', array( $this, 'filter_the_title' ), 0, 2 );
 		$vars[ 'content' ] = $content;
 		$vars[ 'answers' ] = $answers;
+		$vars[ 'answer_links' ] = $this->capture( 'content-answer-links.php', $vars );
 
-		return $this->capture( 'content.php', $vars );
+		add_filter( 'the_title', array( $this, 'filter_the_title' ), 0, 2 );
+
+		if ( $post->post_parent )
+			return $this->capture( 'content-with-history.php', $vars );
+		else
+			return $this->capture( 'content-no-history.php', $vars );
 	}
 
 	function filter_the_title( $title, $post ) {
