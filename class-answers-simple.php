@@ -45,7 +45,7 @@ class CFTP_DT_Answers_Simple {
 	 * 
 	 * @return void
 	 */
-	static public function filter_answer_providers( $answers, $post_id ) {
+	static public function filter_answer_providers( $answers, $post_id = false ) {
 		$answers['simple'] = self::init( $post_id );
 		return $answers;
 	}
@@ -58,6 +58,18 @@ class CFTP_DT_Answers_Simple {
 	 * @return void
 	 **/
 	public function __construct( $post_id = false ) {
+		if ( $post_id )
+			$this->set_post_id( $post_id );
+	}
+	
+	/**
+	 * @TODO
+	 *
+	 * @access public
+	 * 
+	 * @return void
+	 **/
+	public function set_post_id( $post_id ) {
 		$this->post_id = $post_id;
 	}
 	
@@ -104,7 +116,17 @@ class CFTP_DT_Answers_Simple {
 			$answer->get_answer_value()
 		);
 	}
-
+	
+	/**
+	 * @TODO
+	 *
+	 * @access public
+	 * 
+	 * @return string
+	 **/
+	public function get_edit_answer_url( $answer ) {
+		return get_permalink( $answer->get_post()->post_parent );
+	}
 
 }
 

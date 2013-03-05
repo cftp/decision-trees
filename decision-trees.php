@@ -89,6 +89,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 
 		# Filters
 		add_filter( 'the_content',           array( $this, 'filter_the_content' ) );
+		add_filter( 'the_title',             array( $this, 'filter_the_title' ), 0, 2 );
 
 		$this->version = 2;
 
@@ -233,9 +234,9 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 							'post_status' => 'draft',
 							'post_parent' => $post->ID,
 						) );
-						$this->no_recursion = false;
 						wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
 						$page = get_post( $page_id );
+						$this->no_recursion = false;
 					}
 
 					$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
@@ -285,11 +286,29 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		$answers = cftp_dt_get_post_answers( $post->ID );
 
 		$vars = array();
+		remove_filter( 'the_title', array( $this, 'filter_the_title' ), 0, 2 );
+		$vars[ 'title' ] = get_the_title( $post->ID );
+		add_filter( 'the_title', array( $this, 'filter_the_title' ), 0, 2 );
 		$vars[ 'content' ] = $content;
 		$vars[ 'answers' ] = $answers;
-		$vars[ 'answer_providers' ] = $this->answer_providers = apply_filters( 'cftp_dt_answer_providers', array(), $post->ID );
 
 		return $this->capture( 'content.php', $vars );
+	}
+
+	function filter_the_title( $title, $post ) {
+		if ( is_admin() )
+			return $title;
+
+		$post = get_post( $post );
+		if ( 'decision_tree' != $post->post_type )
+			return $title;
+
+		if ( ! $post->post_parent )
+			return $title;
+
+		$ancestors = get_post_ancestors( $post->ID );
+		$oldest = get_post( array_pop( $ancestors ) );
+		return $oldest->post_title;
 	}
 
 	/**
@@ -320,10 +339,10 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 * @author Simon Wheatley
 	 **/
 	function callback_answers_meta_box( $post, $box ) {
+		$this->init_answer_providers_for_post( $post->ID );
+
 		$vars = array();
 		$vars[ 'answers' ] = cftp_dt_get_post_answers( $post->ID );
-		# This filter needs to go somewhere else instead of being run in the meta box:
-		$vars[ 'answer_providers' ] = $this->answer_providers = apply_filters( 'cftp_dt_answer_providers', array(), $post->ID );
 		$this->render_admin( 'meta-box-answers.php', $vars );
 	}
 
@@ -373,10 +392,16 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		error_log( "CFTP DT: Done upgrade, now at version " . $this->version );
 	}
 
-	function get_answer_provider_for_post( $type, $post ) {
+	function init_answer_providers_for_post( $post ) {
 		$post = get_post( $post );
 		if ( ! isset( $this->answer_providers[ $post->ID ] ) )
 			$this->answer_providers[ $post->ID ] = apply_filters( 'cftp_dt_answer_providers', array(), $post->ID );
+	}
+
+	function get_answer_provider_for_post( $type, $post ) {
+		$post = get_post( $post );
+		$this->init_answer_providers_for_post( $post->ID );
+		
 		if ( isset( $this->answer_providers[ $post->ID ][$type] ) )
 			return $this->answer_providers[ $post->ID ][$type];
 		else
@@ -390,7 +415,8 @@ CFTP_Decision_Trees::init();
 
 function cftp_dt_get_post_answers( $post_id = null ) {
 
-	$post = get_post( $post_id );
+	if ( ! $post = get_post( $post_id ) )
+		return array();
 
 	$answers = get_post_meta( $post->ID, '_cftp_dt_answers', true );
 
@@ -402,6 +428,17 @@ function cftp_dt_get_post_answers( $post_id = null ) {
 
 	return $answers;
 
+}
+
+function cftp_dt_get_previous_answers( $post_id = null ) {
+
+	if ( ! $post = get_post( $post_id ) )
+		return array();
+
+	if ( ! $post->post_parent )
+		return array();
+
+	// $ancestors = 
 }
 
 
