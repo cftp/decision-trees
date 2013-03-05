@@ -28,7 +28,7 @@
 		<?php foreach ( $answers as $answer_id => $answer ) : ?>
 
 			<?php
-			if ( !( $provider = $this->get_answer_provider( $answer->get_answer_type() ) ) )
+			if ( !( $provider = $this->get_answer_provider_for_post( $answer->get_answer_type(), $GLOBALS[ 'post' ]->ID ) ) )
 				continue;
 			?>
 

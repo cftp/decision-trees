@@ -380,9 +380,12 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		error_log( "CFTP DT: Done upgrade, now at version " . $this->version );
 	}
 
-	function get_answer_provider( $type ) {
-		if ( isset( $this->answer_providers[$type] ) )
-			return $this->answer_providers[$type];
+	function get_answer_provider_for_post( $type, $post ) {
+		$post = get_post( $post );
+		if ( ! isset( $this->answer_providers[ $post->ID ] ) )
+			$this->answer_providers[ $post->ID ] = apply_filters( 'cftp_dt_answer_providers', array(), $post->ID );
+		if ( isset( $this->answer_providers[ $post->ID ][$type] ) )
+			return $this->answer_providers[ $post->ID ][$type];
 		else
 			return false;
 	}
