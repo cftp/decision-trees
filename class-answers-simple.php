@@ -78,9 +78,9 @@ class CFTP_DT_Answers_Simple {
 	 *
 	 * @access public
 	 * 
-	 * @return void
+	 * @return string
 	 **/
-	public function get_edit_form( $id, $answer ) {
+	public function get_edit_form( $id, CFTP_DT_Answer $answer ) {
 
 		return sprintf( '<input type="text" class="regular-text" name="cftp_dt_edit[%s][simple][text]" placeholder="%s" value="%s" />',
 			$id,
@@ -95,7 +95,7 @@ class CFTP_DT_Answers_Simple {
 	 *
 	 * @access public
 	 * 
-	 * @return void
+	 * @return string
 	 **/
 	public function get_add_form() {
 		return sprintf( '<input type="text" class="regular-text" name="cftp_dt_new[simple][text]" placeholder="%s" />',
@@ -110,7 +110,7 @@ class CFTP_DT_Answers_Simple {
 	 * 
 	 * @return string
 	 **/
-	public function get_answer( $answer ) {
+	public function get_answer( CFTP_DT_Answer $answer ) {
 		return sprintf( '<a class="cftp_dt_answer_link" href="%1$s">%2$s</a>',
 			get_permalink( $answer->get_post()->ID ),
 			$answer->get_answer_value()
@@ -124,7 +124,7 @@ class CFTP_DT_Answers_Simple {
 	 * 
 	 * @return string
 	 **/
-	public function get_edit_answer_url( $answer ) {
+	public function get_edit_answer_url( CFTP_DT_Answer $answer ) {
 		return get_permalink( $answer->get_post()->post_parent );
 	}
 
