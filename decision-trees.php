@@ -262,15 +262,15 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 
 		wp_enqueue_style(
 			'cftp-dt-admin',
-			$this->plugin_url( 'admin.css' ),
+			$this->plugin_url( 'css/admin.css' ),
 			array( 'wp-admin' ),
-			$this->plugin_ver( 'admin.css' )
+			$this->plugin_ver( 'css/admin.css' )
 		);
 		wp_enqueue_script(
 			'cftp-dt-admin',
-			$this->plugin_url( 'admin.js' ),
+			$this->plugin_url( 'js/admin.js' ),
 			array( 'jquery' ),
-			$this->plugin_ver( 'admin.js' )
+			$this->plugin_ver( 'js/admin.js' )
 		);
 
 
