@@ -3,7 +3,7 @@
 Plugin Name: Decision Trees
 Plugin URI:  https://github.com/cftp/decision-trees
 Description: Provides a custom post type to create decision trees in WordPress
-Version:     1.3
+Version:     1.3.1
 Author:      Code for the People
 Author URI:  http://codeforthepeople.com/ 
 Text Domain: cftp_dt
@@ -92,7 +92,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		add_filter( 'the_content',           array( $this, 'filter_the_content' ) );
 		add_filter( 'the_title',             array( $this, 'filter_the_title' ), 0, 2 );
 
-		$this->version = 2;
+		$this->version = 3;
 
 		parent::__construct( __FILE__ );
 	}
@@ -494,6 +494,17 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		if ( $version < 2 ) {
 			flush_rewrite_rules();
 			error_log( "CFTP DT: Flush rewrite rules" );
+		}
+
+		// Change existing posts to our new post type name
+		if ( $version < 3 ) {
+			$q = $wpdb->prepare( "
+				UPDATE {$wpdb->posts}
+				SET post_type = %s
+				WHERE post_type = 'decision_tree'
+			", $this->post_type );
+			$wpdb->query( $q );
+			error_log( "CFTP DT: Updated old post type names" );
 		}
 
 		// N.B. Remember to increment $this->version in self::__construct above when you add a new IF
