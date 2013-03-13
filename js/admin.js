@@ -29,4 +29,63 @@ jQuery(function($){
 
 	});
 
+	if ( window.jsPlumb ) {
+
+		jsPlumb.ready(function(){
+
+			var arrowCommon = {
+				foldback    : 0.7,
+				width       : 14,
+				length      : 14,
+				paintStyle  : {
+					fillStyle : '#555'
+				}
+			};
+			var epCommon = {
+				endpoint : 'Blank',
+				anchor   : [ 'RightMiddle', 'LeftMiddle' ]
+			};
+			var labelCommon = {};
+
+			$('[data-nodeparent]').each(function(k,v){
+
+				node_parent = $(this).attr('data-nodeparent');
+
+				if ( '0' != node_parent ) {
+
+					source_id = $(this).attr('id');
+					target_id = 'cftp_dt_node_' + node_parent;
+
+					ep_source = jsPlumb.addEndpoint( source_id, {}, epCommon );
+					ep_target = jsPlumb.addEndpoint( target_id, {}, epCommon );
+
+					jsPlumb.connect({
+						source     : ep_source,
+						target     : ep_target,
+						connector  : 'Straight',
+						paintStyle : {
+							lineWidth : 2,
+							strokeStyle : '#555'
+						},
+						overlays   : [
+							[ 'Arrow', {
+								location  : 0.3,
+								direction : -1,
+							}, arrowCommon ],
+							[ 'Label', {
+								location  : 0.6,
+								label     : $(this).attr('data-label'),
+								cssClass  : 'cftp_dt_label'
+							}, labelCommon ],
+						]
+					});
+
+				}
+
+			});
+
+		});
+
+	}
+
 });

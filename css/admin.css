@@ -27,3 +27,31 @@
 #parent_id {
 	display: none;
 }
+
+.cftp_dt_container {
+	white-space: nowrap;
+}
+
+.cftp_dt_level {
+	display: inline-block;
+	width: 500px;
+	vertical-align: middle;
+	white-space: normal;
+}
+
+.cftp_dt_node {
+	border: 2px solid #555;
+	margin-bottom: 100px;
+	width: 150px;
+	border-radius: 3px;
+	padding: 10px 15px;
+}
+
+.cftp_dt_label {
+	background: #fff;
+	padding: 10px 15px;
+	border: 1px solid #555;
+	border-radius: 3px;
+	max-width: 150px;
+	font-size: 11px;
+}

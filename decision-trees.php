@@ -1,11 +1,11 @@
 <?php 
 /*
 Plugin Name: Decision Trees
-Plugin URI: https://github.com/cftp/decision-trees
+Plugin URI:  https://github.com/cftp/decision-trees
 Description: Provides a custom post type to create decision trees in WordPress
-Version: 1.2
-Author: Code for the People
-Author URI: http://www.codeforthepeople.com/ 
+Version:     1.3
+Author:      Code for the People
+Author URI:  http://codeforthepeople.com/ 
 Text Domain: cftp_dt
 Domain Path: /languages/
 */
@@ -31,8 +31,8 @@ Domain Path: /languages/
 // Exit if accessed directly
 defined( 'ABSPATH' ) or die();
 
-require_once( dirname( __FILE__ ) . '/class-plugin.php' );
-require_once( dirname( __FILE__ ) . '/class-answers-simple.php' );
+require_once dirname( __FILE__ ) . '/class-plugin.php';
+require_once dirname( __FILE__ ) . '/class-answers-simple.php';
 
 /**
  * Decision Trees
@@ -49,7 +49,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 **/
 	public $version;
 	
-	public $post_type = 'decision_tree';
+	public $post_type = 'decision_node';
 
 	public $no_recursion = false;
 
@@ -86,6 +86,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		add_action( 'add_meta_boxes',        array( $this, 'action_add_meta_boxes' ), 10, 2 );
 		add_action( 'save_post',             array( $this, 'action_save_post' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'action_admin_enqueue_scripts' ) );
+		add_action( 'admin_menu',            array( $this, 'action_admin_menu' ) );
 
 		# Filters
 		add_filter( 'the_content',           array( $this, 'filter_the_content' ) );
@@ -125,36 +126,122 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 
 		$args = array(
 			'labels' => array(
-				'label' => __( 'Decision Node', 'cftp_dt' ),
-				'name_admin_bar' => _x( 'Decision Tree', 'add new on admin bar', 'cftp_dt' ),
-				'name' => __( 'Decision Trees', 'cftp_dt' ),
-				'singular_name' => __( 'Decision Node', 'cftp_dt' ),
-				'add_new' => __( 'Add New', 'cftp_dt' ),
-				'add_new_item' => __( 'Add New Decision Node', 'cftp_dt' ),
-				'edit_item' => __( 'Edit Decision Node', 'cftp_dt' ),
-				'new_item' => __( 'New Decision Node', 'cftp_dt' ),
-				'view_item' => __( 'View Decision Node', 'cftp_dt' ),
-				'search_items' => __( 'Search Decision Nodes', 'cftp_dt' ),
-				'not_found' => __( 'No Decision Nodes found.', 'cftp_dt' ),
-				'not_found_in_trash' => __( 'No Decision Trees found in Trash.', 'cftp_dt' ),
-				'parent_item_colon' => 'Parent Decision Node:',
-				'all_items' => __( 'All Decision Trees', 'cftp_dt' ),
-				'menu_name' => __( 'Decision Trees', 'cftp_dt' ),
-				'label' => __( 'Decision Node', 'cftp_dt' ),
+				'label'              => __( 'Decision Node', 'cftp_dt' ),
+				'name_admin_bar'     => _x( 'Decision Node', 'add new on admin bar', 'cftp_dt' ),
+				'name'               => __( 'Decision Trees', 'cftp_dt' ),
+				'singular_name'      => __( 'Decision Node', 'cftp_dt' ),
+				'add_new'            => __( 'Add New Node', 'cftp_dt' ),
+				'add_new_item'       => __( 'Add New Decision Node', 'cftp_dt' ),
+				'edit_item'          => __( 'Edit Decision Node', 'cftp_dt' ),
+				'new_item'           => __( 'New Decision Node', 'cftp_dt' ),
+				'view_item'          => __( 'View Decision Node', 'cftp_dt' ),
+				'search_items'       => __( 'Search Decision Nodes', 'cftp_dt' ),
+				'not_found'          => __( 'No nodes found.', 'cftp_dt' ),
+				'not_found_in_trash' => __( 'No nodes found in Trash.', 'cftp_dt' ),
+				'parent_item_colon'  => __( 'Parent Decision Node:', 'cftp_dt' ),
+				'all_items'          => __( 'All Decision Nodes', 'cftp_dt' ),
+				'menu_name'          => __( 'Decision Trees', 'cftp_dt' ),
+				'label'              => __( 'Decision Node', 'cftp_dt' ),
 			),
-			'public' => true,
+			'public'             => true,
 			'publicly_queryable' => true,
-			'capability_type' => 'page', // @TODO: Set this to `decision_tree` and map meta caps
-			// 'map_meta_cap' => true,
-			'menu_position' => 20,
-			'hierarchical' => true,
-			'rewrite' => true,
-			'query_var' => 'help',
-			'delete_with_user' => false,
-			'supports' => array( 'title', 'editor', 'page-attributes' ),
+			'capability_type'    => 'page', // @TODO: Set this to `$this->post_type` and map meta caps
+		//	'map_meta_cap'       => true,
+			'menu_position'      => 20,
+			'hierarchical'       => true,
+			'rewrite'            => array(
+				'with_front' => false,
+				'slug'       => 'decision-tree'
+			),
+			'query_var'          => 'help', // @TODO: is this the best qv name?
+			'delete_with_user'   => false,
+			'supports'           => array( 'title', 'editor', 'page-attributes' ),
 		);
 		$args = apply_filters( 'cftp_dt_cpt_args', $args );
 		$cpt = register_post_type( $this->post_type, $args );
+	}
+
+	function action_admin_menu() {
+
+		$pto = get_post_type_object( $this->post_type );
+
+		add_submenu_page(
+			'edit.php?post_type=decision_node',
+			__( 'Visualise Nodes', 'cftp_dt' ),
+			__( 'Visualise Nodes', 'cftp_dt' ),
+			$pto->cap->edit_posts,
+			'cftp_dt_visualise',
+			array( $this, 'admin_page_visualise' )
+		);
+
+	}
+
+	function admin_page_visualise() {
+
+		# @TODO D.R.Y.:
+		$post_status = get_post_stati();
+		unset(
+			$post_status['trash'],
+			$post_status['auto-draft'],
+			$post_status['inherit']
+		);
+
+		$tree = array();
+		$tree[0] = get_pages( array(
+			'post_type'   => $this->post_type,
+			'post_status' => $post_status,
+			'sort_column' => 'menu_order,post_title',
+			'parent'      => 0,
+		) );
+
+		$tree = $this->populate_tree( $tree );
+
+		$max = 0;
+		foreach ( $tree as $nodes )
+			$max = max( $max, count( $nodes ) );
+
+		$vars['tree'] = $tree;
+		$vars['max']  = $max;
+
+		$this->render_admin( 'visualise.php', $vars );
+
+	}
+
+	function populate_tree( $tree, $level = 0 ) {
+
+		# @TODO D.R.Y.:
+		$post_status = get_post_stati();
+		unset(
+			$post_status['trash'],
+			$post_status['auto-draft'],
+			$post_status['inherit']
+		);
+
+		foreach ( $tree[$level] as $page ) {
+
+			$children = get_pages( array(
+				'post_type'   => $this->post_type,
+				'post_status' => $post_status,
+				'sort_column' => 'menu_order,post_title',
+				'parent'      => $page->ID,
+				'child_of'    => $page->ID, # This is required when using the 'parent' arg and is a WP bug. @TODO: file it
+			) );
+
+			$page->level = $level;
+
+			if ( !empty( $children ) ) {
+
+				if ( !isset( $tree[$level+1] ) )
+					$tree[$level+1] = array();
+				$tree[$level+1] = array_merge( $tree[$level+1], $children );
+				$tree = $this->populate_tree( $tree, $level+1 );
+
+			}
+
+		}
+
+		return $tree;
+
 	}
 
 	function action_save_post( $post_id, $post ) {
@@ -266,13 +353,19 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 			array( 'wp-admin' ),
 			$this->plugin_ver( 'css/admin.css' )
 		);
+
+		wp_register_script(
+			'jquery.jsPlumb',
+			$this->plugin_url( 'js/jquery.jsPlumb-1.3.16-all-min.js' ),
+			array( 'jquery'/*, 'jquery-ui'*/ ), /* jQuery UI is only needed if we add drag-and-drop */
+			'1.3.16'
+		);
 		wp_enqueue_script(
 			'cftp-dt-admin',
 			$this->plugin_url( 'js/admin.js' ),
-			array( 'jquery' ),
+			array( 'jquery', 'jquery.jsPlumb' ),
 			$this->plugin_ver( 'js/admin.js' )
 		);
-
 
 	}
 
