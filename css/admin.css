@@ -34,24 +34,38 @@
 
 .cftp_dt_level {
 	display: inline-block;
-	width: 500px;
 	vertical-align: middle;
 	white-space: normal;
 }
 
-.cftp_dt_node {
-	border: 2px solid #555;
-	margin-bottom: 100px;
-	width: 150px;
-	border-radius: 3px;
-	padding: 10px 15px;
+.cftp_dt_level_question {
+	width: 300px;
 }
 
-.cftp_dt_label {
-	background: #fff;
-	padding: 10px 15px;
-	border: 1px solid #555;
+.cftp_dt_level_answer {
+	width: 220px;
+}
+
+.cftp_dt_node {
+	margin-bottom: 50px;
 	border-radius: 3px;
-	max-width: 150px;
-	font-size: 11px;
+	padding: 5px 10px;
+}
+
+.cftp_dt_node p {
+	margin: 5px 0;
+}
+
+.cftp_dt_node_question {
+	border: 2px solid #444;
+	width: 150px;
+}
+
+.cftp_dt_node_answer {
+	border: 2px solid #888;
+	width: 150px;
+}
+
+.cftp_dt_node:hover .row-actions {
+	visibility: visible;
 }

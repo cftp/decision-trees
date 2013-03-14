@@ -38,23 +38,22 @@ jQuery(function($){
 				width       : 14,
 				length      : 14,
 				paintStyle  : {
-					fillStyle : '#555'
+					fillStyle : '#ccc'
 				}
 			};
 			var epCommon = {
 				endpoint : 'Blank',
 				anchor   : [ 'RightMiddle', 'LeftMiddle' ]
 			};
-			var labelCommon = {};
 
 			$('[data-nodeparent]').each(function(k,v){
 
+				node_type   = $(this).attr('data-nodetype');
 				node_parent = $(this).attr('data-nodeparent');
+				source_id   = $(this).attr('id');
+				target_id   = 'cftp_dt_node_' + node_parent;
 
-				if ( '0' != node_parent ) {
-
-					source_id = $(this).attr('id');
-					target_id = 'cftp_dt_node_' + node_parent;
+				if ( $('#'+target_id).length ) {
 
 					ep_source = jsPlumb.addEndpoint( source_id, {}, epCommon );
 					ep_target = jsPlumb.addEndpoint( target_id, {}, epCommon );
@@ -65,18 +64,13 @@ jQuery(function($){
 						connector  : 'Straight',
 						paintStyle : {
 							lineWidth : 2,
-							strokeStyle : '#555'
+							strokeStyle : '#ccc'
 						},
 						overlays   : [
 							[ 'Arrow', {
-								location  : 0.3,
+								location  : 0.5,
 								direction : -1,
-							}, arrowCommon ],
-							[ 'Label', {
-								location  : 0.6,
-								label     : $(this).attr('data-label'),
-								cssClass  : 'cftp_dt_label'
-							}, labelCommon ],
+							}, arrowCommon ]
 						]
 					});
 
