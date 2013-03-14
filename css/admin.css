@@ -44,7 +44,7 @@
 }
 
 .cftp_dt_node {
-	margin-bottom: 50px;
+	margin-bottom: 25px;
 	padding: 5px 10px;
 	background: #fff;
 	border: 1px solid #fff;
@@ -58,4 +58,8 @@
 
 .cftp_dt_node:hover .row-actions {
 	visibility: visible;
+}
+
+.cftp_dt_node_highlighted {
+	border-color: #999;
 }

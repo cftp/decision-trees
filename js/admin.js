@@ -29,6 +29,55 @@ jQuery(function($){
 
 	});
 
+	$('.cftp_dt_node').hover(function(){
+
+		/* This code is a nice big mess. Clean it up! */
+
+		np = $(this).attr('data-nodeparent');
+		hl = new Array();
+
+		while ( np != '0' ) {
+			hl.push( np );
+			parent_node = $('#cftp_dt_node_'+np);
+			if ( !parent_node.length )
+				break;
+			np = parent_node.attr('data-nodeparent');
+		}
+
+		$(this).addClass('cftp_dt_node_highlighted');
+		conn = jsPlumb.getConnections({
+			source : $(this).attr('id')
+		});
+		$.each(conn,function(k,v){
+			v.setPaintStyle({
+				strokeStyle : '#555'
+			});
+		});
+		$.each(hl,function(k,v){
+			$('#cftp_dt_node_'+v).addClass('cftp_dt_node_highlighted');
+			conn = jsPlumb.getConnections({
+				source : 'cftp_dt_node_'+v
+			});
+			$.each(conn,function(k,v){
+				v.setPaintStyle({
+					strokeStyle : '#555'
+				});
+			});
+		});
+
+	},function(){
+
+		$('.cftp_dt_node').removeClass('cftp_dt_node_highlighted');
+
+		conn = jsPlumb.getConnections();
+		$.each(conn,function(k,v){
+			v.setPaintStyle({
+				strokeStyle : '#ccc'
+			});
+		});
+
+	});
+
 	if ( window.jsPlumb ) {
 
 		jsPlumb.ready(function(){
