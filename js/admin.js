@@ -34,9 +34,9 @@ jQuery(function($){
 		jsPlumb.ready(function(){
 
 			var arrowCommon = {
-				foldback    : 0.7,
-				width       : 14,
-				length      : 14,
+				foldback    : 0.8,
+				width       : 11,
+				length      : 11,
 				paintStyle  : {
 					fillStyle : '#ccc'
 				}
@@ -48,7 +48,6 @@ jQuery(function($){
 
 			$('[data-nodeparent]').each(function(k,v){
 
-				node_type   = $(this).attr('data-nodetype');
 				node_parent = $(this).attr('data-nodeparent');
 				source_id   = $(this).attr('id');
 				target_id   = 'cftp_dt_node_' + node_parent;
@@ -63,15 +62,15 @@ jQuery(function($){
 						target     : ep_target,
 						connector  : 'Straight',
 						paintStyle : {
-							lineWidth : 2,
+							lineWidth : 1,
 							strokeStyle : '#ccc'
-						},
+						}/*,
 						overlays   : [
 							[ 'Arrow', {
 								location  : 0.5,
 								direction : -1,
 							}, arrowCommon ]
-						]
+						]*/
 					});
 
 				}

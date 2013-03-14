@@ -30,40 +30,30 @@
 
 .cftp_dt_container {
 	white-space: nowrap;
+	background: #eee;
+	padding: 40px 40px 0;
+	margin-top: 15px;
+	border: 1px solid #ddd;
 }
 
 .cftp_dt_level {
 	display: inline-block;
 	vertical-align: middle;
 	white-space: normal;
-}
-
-.cftp_dt_level_question {
-	width: 300px;
-}
-
-.cftp_dt_level_answer {
-	width: 220px;
+	width: 320px;
 }
 
 .cftp_dt_node {
 	margin-bottom: 50px;
-	border-radius: 3px;
 	padding: 5px 10px;
+	background: #fff;
+	border: 1px solid #fff;
+	box-shadow: 0 1px 2px rgba( 0, 0, 0, 0.1 );
+	width: 200px;
 }
 
 .cftp_dt_node p {
 	margin: 5px 0;
-}
-
-.cftp_dt_node_question {
-	border: 2px solid #444;
-	width: 150px;
-}
-
-.cftp_dt_node_answer {
-	border: 2px solid #888;
-	width: 150px;
 }
 
 .cftp_dt_node:hover .row-actions {
