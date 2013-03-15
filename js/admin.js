@@ -85,6 +85,11 @@ jQuery(function($){
 
 	});
 
+	$('#cftp_dt_visualiser').width((function(){
+		w = $('.cftp_dt_level').first().width();
+		return $('.cftp_dt_level').length * w;
+	})());
+
 	if ( window.jsPlumb ) {
 
 		jsPlumb.ready(function(){
