@@ -3,7 +3,7 @@
 Plugin Name: Decision Trees
 Plugin URI:  https://github.com/cftp/decision-trees
 Description: Provides a custom post type to create decision trees in WordPress
-Version:     1.3.2
+Version:     1.4
 Author:      Code for the People
 Author URI:  http://codeforthepeople.com/ 
 Text Domain: cftp_dt
@@ -104,6 +104,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		add_action( 'save_post',             array( $this, 'action_save_post' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'action_admin_enqueue_scripts' ) );
 		add_action( 'admin_menu',            array( $this, 'action_admin_menu' ) );
+		add_action( 'admin_notices',         array( $this, 'action_admin_notices' ) );
 
 		# Filters
 		add_filter( 'the_content',           array( $this, 'filter_the_content' ) );
@@ -112,6 +113,16 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		$this->version = 3;
 
 		parent::__construct( __FILE__ );
+	}
+
+	function action_admin_notices() {
+		if ( ( get_current_screen()->post_type == $this->post_type ) and isset( $_GET['answer_added'] ) ) {
+			?>
+			<div class="updated" id="cftp_dt_answer_added">
+				<p><?php _e( 'Answer added.', 'cftp_dt' ); ?></p>
+			</div>
+			<?php
+		}
 	}
 
 	// HOOKS
@@ -127,8 +138,74 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 **/
 	function action_admin_init() {
 		$this->maybe_update();
+
+		if ( isset( $_POST['action'] ) and ( 'cftp_dt_add_answer' == $_POST['action'] ) )
+			$this->process_add_answer();
+
 	}
 	
+	function process_add_answer() {
+
+		check_admin_referer( 'cftp_dt_add_answer' );
+
+		$post = get_post( $post_id = absint( $_POST['post_id'] ) );
+
+		$answer_page_ids = get_post_meta( $post_id, '_cftp_dt_answers', true );
+
+		if ( empty( $answer_page_ids ) )
+			$answer_page_ids = array();
+
+		# @TODO D.R.Y. This (and the code in action_save_meta) should be abstracted:
+
+		foreach ( $_POST['cftp_dt_new'] as $answer_type => $answer ) {
+
+			if ( !isset( $answer['page_title'] ) or empty( $answer['page_title'] ) ) {
+				if ( isset( $answer['text'] ) and !empty( $answer['text'] ) )
+					$answer['page_title'] = $answer['text'];
+				else
+					continue;
+			}
+
+			$answer_meta = array();
+
+			$title = trim( $answer['page_title'] );
+			$page  = get_page_by_title( $title, OBJECT, $this->post_type );
+
+			if ( !$page ) {
+				$this->no_recursion = true;
+				$page_id = wp_insert_post( array(
+					'post_title'  => $title,
+					'post_type'   => $this->post_type,
+					'post_status' => 'draft',
+					'post_parent' => $post->ID,
+				) );
+				wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
+				$page = get_post( $page_id );
+				$this->no_recursion = false;
+			}
+
+			$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
+			$answer_meta['_cftp_dt_answer_type']  = $answer_type;
+			$answer_page_ids[] = $page->ID;
+
+			foreach ( $answer_meta as $k => $v )
+				update_post_meta( $page->ID, $k, $v );
+
+		}
+
+		update_post_meta( $post->ID, '_cftp_dt_answers', $answer_page_ids );
+
+		$redirect = add_query_arg( array(
+			'post_type'    => $this->post_type,
+			'page'         => 'cftp_dt_visualise',
+			'answer_added' => 'true'
+		), admin_url( 'edit.php' ) );
+
+		wp_redirect( $redirect );
+		die();
+
+	}
+
 	/**
 	 * undocumented function
 	 *
@@ -367,7 +444,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		wp_enqueue_style(
 			'cftp-dt-admin',
 			$this->plugin_url( 'css/admin.css' ),
-			array( 'wp-admin' ),
+			array( 'wp-admin', 'thickbox' ),
 			$this->plugin_ver( 'css/admin.css' )
 		);
 
@@ -380,7 +457,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		wp_enqueue_script(
 			'cftp-dt-admin',
 			$this->plugin_url( 'js/admin.js' ),
-			array( 'jquery', 'jquery.jsPlumb' ),
+			array( 'jquery', 'jquery.jsPlumb', 'thickbox' ),
 			$this->plugin_ver( 'js/admin.js' )
 		);
 
@@ -467,7 +544,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 	 * @author Simon Wheatley
 	 **/
 	function callback_answers_meta_box( $post, $box ) {
-		$this->init_answer_providers_for_post( $post->ID );
+		$this->init_answer_providers();
 
 		$vars = array();
 		$vars[ 'answers' ] = cftp_dt_get_post_answers( $post->ID );
@@ -531,20 +608,29 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		error_log( "CFTP DT: Done upgrade, now at version " . $this->version );
 	}
 
-	function init_answer_providers_for_post( $post ) {
-		$post = get_post( $post );
-		if ( ! isset( $this->answer_providers[ $post->ID ] ) )
-			$this->answer_providers[ $post->ID ] = apply_filters( 'cftp_dt_answer_providers', array(), $post->ID );
+	function init_answer_providers() {
+
+		if ( !isset( $this->answer_providers ) )
+			$this->answer_providers = apply_filters( 'cftp_dt_answer_providers', array() );
+
 	}
 
-	function get_answer_provider_for_post( $type, $post ) {
-		$post = get_post( $post );
-		$this->init_answer_providers_for_post( $post->ID );
+	function get_answer_provider( $answer_type ) {
+
+		$this->init_answer_providers();
 		
-		if ( isset( $this->answer_providers[ $post->ID ][$type] ) )
-			return $this->answer_providers[ $post->ID ][$type];
+		if ( isset( $this->answer_providers[$answer_type] ) )
+			return $this->answer_providers[$answer_type];
 		else
 			return false;
+	}
+
+	function get_answer_providers() {
+
+		$this->init_answer_providers();
+
+		return $this->answer_providers;
+
 	}
 
 }

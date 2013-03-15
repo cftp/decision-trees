@@ -15,7 +15,7 @@
 				continue;
 			$previous_answer_parent = get_post( $previous_answer->post_parent );
 			$answer = new CFTP_DT_Answer( $previous_answer->ID );
-			$provider = $this->get_answer_provider_for_post( $answer->get_answer_type(), $previous_answer->ID );
+			$provider = $this->get_answer_provider( $answer->get_answer_type() );
 		?>
 			<li class="cftp_dt_prev_answer">
 				<h3 class="cftp-dt-node-title"><?php echo $previous_answer_parent->post_title; ?></h3>
@@ -28,7 +28,7 @@
 
 		<?php 
 			$answer = new CFTP_DT_Answer( get_the_ID() );
-			$provider = $this->get_answer_provider_for_post( $answer->get_answer_type(), get_the_ID() );
+			$provider = $this->get_answer_provider( $answer->get_answer_type() );
 		?>
 
 		<h2 class="cftp-dt-current"><?php echo $title; ?></h2>

@@ -12,25 +12,18 @@ defined( 'ABSPATH' ) or die();
 class CFTP_DT_Answers_Simple {
 
 	/**
-	 * The ID for the decision tree node/post in question
-	 *
-	 * @var int
-	 **/
-	var $post_id;
-	
-	/**
 	 * Singleton stuff.
 	 * 
 	 * @access @static
 	 * 
 	 * @return void
 	 */
-	static public function init( $post_id = false ) {
+	static public function init() {
 		static $instance = false;
 
 		if ( ! $instance ) {
 			$class = get_called_class();
-			$instance = new $class( $post_id );
+			$instance = new $class();
 		}
 
 		return $instance;
@@ -45,8 +38,8 @@ class CFTP_DT_Answers_Simple {
 	 * 
 	 * @return void
 	 */
-	static public function filter_answer_providers( $answers, $post_id = false ) {
-		$answers['simple'] = self::init( $post_id );
+	static public function filter_answer_providers( $answers ) {
+		$answers['simple'] = self::init();
 		return $answers;
 	}
 	
@@ -57,20 +50,8 @@ class CFTP_DT_Answers_Simple {
 	 * 
 	 * @return void
 	 **/
-	public function __construct( $post_id = false ) {
-		if ( $post_id )
-			$this->set_post_id( $post_id );
-	}
-	
-	/**
-	 * @TODO
-	 *
-	 * @access public
-	 * 
-	 * @return void
-	 **/
-	public function set_post_id( $post_id ) {
-		$this->post_id = $post_id;
+	public function __construct() {
+		// Nothing
 	}
 	
 	/**
@@ -130,4 +111,4 @@ class CFTP_DT_Answers_Simple {
 
 }
 
-add_filter( 'cftp_dt_answer_providers', 'CFTP_DT_Answers_Simple::filter_answer_providers', 0, 2 );
+add_filter( 'cftp_dt_answer_providers', 'CFTP_DT_Answers_Simple::filter_answer_providers', 0 );

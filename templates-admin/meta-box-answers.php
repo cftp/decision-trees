@@ -16,7 +16,7 @@
 
 	<p><input type="button" class="button-secondary" value="<?php _e( 'Add An Answer', 'cftp_dt' ); ?>" id="cftp_add_answer" /></p>
 
-	<?php foreach ( $this->answer_providers[ $post->ID ] as $provider_name => $provider ) : ?>
+	<?php foreach ( $this->get_answer_providers() as $provider_name => $provider ) : ?>
 
 		<div class="add_answer" data-answer-type="<?php echo esc_attr( $provider_name ); ?>">
 			<div class="answer_field">
@@ -36,7 +36,7 @@
 	<?php foreach ( $answers as $answer_id => $answer ) : ?>
 
 		<?php
-		if ( !( $provider = $this->get_answer_provider_for_post( $answer->get_answer_type(), $post->ID ) ) )
+		if ( !( $provider = $this->get_answer_provider( $answer->get_answer_type() ) ) )
 			continue;
 		?>
 

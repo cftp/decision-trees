@@ -31,7 +31,7 @@ jQuery(function($){
 
 	$('.cftp_dt_node').hover(function(){
 
-		/* This code is a nice big mess. Clean it up! */
+		/* This code is a nice big mess. Clean it up! (see the new data-nodeid attribute) */
 
 		np = $(this).attr('data-nodeparent');
 		hl = new Array();
@@ -75,6 +75,13 @@ jQuery(function($){
 				strokeStyle : '#ccc'
 			});
 		});
+
+	});
+
+	$('.cftp_dt_add_answer').click(function(e){
+
+		post_id = $(this).closest('[data-nodeid]').attr('data-nodeid');
+		$('#cftp_dt_add_answer_id').val( post_id );
 
 	});
 

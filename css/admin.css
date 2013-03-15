@@ -1,5 +1,5 @@
 
-.add_answer {
+#cftp_dt_add_answer .add_answer {
 	display: none;
 }
 
@@ -23,15 +23,21 @@
 	width: 98%;
 }
 
+#cftp_dt_add_answer_form .answer_field,
+#cftp_dt_add_answer_form .answer_title {
+	margin-top: 10px;
+}
+
+#cftp_dt_visualiser_add_answer,
 #pageparentdiv p:first-child,
 #parent_id {
 	display: none;
 }
 
-.cftp_dt_container {
+#cftp_dt_visualiser {
 	white-space: nowrap;
 	background: #eee;
-	padding: 40px 40px 0;
+	padding: 20px 20px 0;
 	margin-top: 15px;
 	border: 1px solid #ddd;
 }
@@ -40,11 +46,11 @@
 	display: inline-block;
 	vertical-align: middle;
 	white-space: normal;
-	width: 320px;
+	width: 300px;
 }
 
 .cftp_dt_node {
-	margin-bottom: 25px;
+	margin-bottom: 20px;
 	padding: 5px 10px;
 	background: #fff;
 	border: 1px solid #fff;
@@ -54,6 +60,10 @@
 
 .cftp_dt_node p {
 	margin: 5px 0;
+}
+
+.cftp_dt_node .row-actions a {
+	text-decoration: none;
 }
 
 .cftp_dt_node:hover .row-actions {
