@@ -4,12 +4,12 @@
 
 <?php if ( ! $post->post_parent ) : ?>
 	<p class="description">
-		<?php _e( 'Tip: as this is the first decision node in your tree, use it to orient your visitor and then add a single answer with link text similar to "start". The decision tree proper will then start on the second node.' ); ?>
+		<?php _e( 'Tip: as this is the first decision node in your tree, use it to orient your visitor and then add a single answer with link text similar to "start". The decision tree proper will then start on the second node.', 'cftp_dt' ); ?>
 	</p>
 <?php endif; ?>
 
 <p class="description">
-	<?php _e( 'Tip: phrase the answer link text as a statement, e.g. "It has six legs."', 'nao' ); ?>
+	<?php _e( 'Tip: phrase the answer link text as a statement, e.g. "It has six legs."', 'cftp_dt' ); ?>
 </p>
 
 <div id="cftp_dt_add_answer">
