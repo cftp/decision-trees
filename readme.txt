@@ -10,7 +10,7 @@ Provides a custom post type to create decision trees in WordPress.
 
 The plugin comes with the ability to add simple links from a decision node to the possible answers you can give to that node, e.g. the node might ask "How many legs does it have?" then provide links to "it has two legs", "it has four legs", "it has six legs", etc.
 
-It is possible to extend the plugin to provide range based answers, meaning you could ask a user to type in a date or length in cm, and then calculate the decision node which correctly answers this dynamically./Users/simon/Scripts/wp2github/wp2github/wp2github.py --source readme.txt --target readme.md
+It is possible to extend the plugin to provide range based answers, meaning you could ask a user to type in a date or length in cm, and then calculate the decision node which correctly answers this dynamically.
 
 == Installation ==
 1. Download and unzip the plugin.
