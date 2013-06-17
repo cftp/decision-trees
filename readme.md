@@ -18,6 +18,17 @@ It is possible to extend the plugin to provide range based answers, meaning you 
 2. Copy the decision-trees directory into your plugins folder.
 3. Visit your Plugins page and activate the plugin.
 
+## Screenshots
+
+![Visualising your decision tree in the admin area](screenshot-1.jpg)
+*Visualising your decision tree in the admin area*
+
+![A decision node with some answer links](screenshot-2.jpg)
+*A decision node with some answer links*
+
+![A decision node showing the two preceding answers and the link to change them](screenshot-3.jpg)
+*A decision node showing the two preceding answers and the link to change them*
+
 ## Changelog
 
 ### 1.2 
