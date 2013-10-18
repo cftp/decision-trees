@@ -1,0 +1,15 @@
+{
+    "name": "cftp/decision-trees",
+    "description": "A WordPress plugin to provide Decision Trees.",
+    "license": "GPL-2.0+",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "Code For The People",
+            "email": "hello@codeforthepeople.com"
+        }
+    ],
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}
