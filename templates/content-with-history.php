@@ -23,20 +23,45 @@
 				<a href="<?php echo $provider->get_edit_answer_url( $answer ); ?>">change this answer</a>
 			</li>
 	<?php endforeach; ?>
+    
 
-	<li class="cftp-dt-current">
-
+	<li class="cftp-dt-current"><a name="latest"></a>
+    
 		<?php 
-			$answer = new CFTP_DT_Answer( get_the_ID() );
-			$provider = $this->get_answer_provider( $answer->get_answer_type() );
-		?>
+            $answer = new CFTP_DT_Answer( get_the_ID() );
+            $provider = $this->get_answer_provider( $answer->get_answer_type() );
+        ?>   
 
 		<h2 class="cftp-dt-current"><?php echo $title; ?></h2>
 
 		<div class="cftp-dt-content"><?php echo $content; ?></div>
 
 		<?php if ( $answer_links ) : echo $answer_links; endif; ?>
+        
+
+
+        <?php $node_ancestors = get_post_ancestors(get_the_ID()); ?> 
+        
+        <?php
+        
+			$get_children_args = array( 
+											'post_parent' => get_the_ID(),
+											'post_type'   => 'decision_node', 
+											'numberposts' => -1,
+											'post_status' => 'publish'
+										);
+		?>
+
+		<?php if ((count($node_ancestors) >= 2) && (count(get_children($get_children_args)) == 0)) { ?>
+
+            <a href="<?php echo get_permalink($node_ancestors[0]); ?>" class="change_answer">Does this help? If not, click here to change your answer.</a>
+            
+		<?php } // if ((count($node_ancestors) >= 2) && (count(get_children($get_children_args)) == 0)) { ?>
 
 	</li>
+    
+
+    
+    
 
 </ol>
