@@ -242,6 +242,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 			'capability_type'    => 'page', // @TODO: Set this to `$this->post_type` and map meta caps
 		//	'map_meta_cap'       => true,
 			'menu_position'      => 20,
+			'menu_icon'          => 'dashicons-networking',
 			'hierarchical'       => true,
 			'rewrite'            => array(
 				'with_front' => false,
