@@ -691,3 +691,11 @@ class CFTP_DT_Answer {
 	}
 
 }
+
+if(!function_exists('enqueue_scroll_js')) {
+	add_action('init','enqueue_scroll_js');
+	
+	function enqueue_scroll_js() {
+	    wp_enqueue_script( 'decision_tree_scroll', plugins_url( '/js/dt_scroll.js', __FILE__ ), array('jquery'), '0.9', true);
+	};
+};
