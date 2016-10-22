@@ -169,20 +169,19 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 			$answer_meta = array();
 
 			$title = trim( $answer['page_title'] );
-			$page  = get_page_by_title( $title, OBJECT, $this->post_type );
 
-			if ( !$page ) {
-				$this->no_recursion = true;
-				$page_id = wp_insert_post( array(
-					'post_title'  => $title,
-					'post_type'   => $this->post_type,
-					'post_status' => 'draft',
-					'post_parent' => $post->ID,
-				) );
-				wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
-				$page = get_post( $page_id );
-				$this->no_recursion = false;
-			}
+
+			$this->no_recursion = true;
+			$page_id = wp_insert_post( array(
+				'post_title'  => $title,
+				'post_type'   => $this->post_type,
+				'post_status' => 'draft',
+				'post_parent' => $post->ID,
+			) );
+			wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
+			$page = get_post( $page_id );
+			$this->no_recursion = false;
+
 
 			$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
 			$answer_meta['_cftp_dt_answer_type']  = $answer_type;
@@ -406,20 +405,18 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 					$answer_meta = array();
 
 					$title = trim( $answer['page_title'] );
-					$page  = get_page_by_title( $title, OBJECT, $this->post_type );
 
-					if ( !$page ) {
-						$this->no_recursion = true;
-						$page_id = wp_insert_post( array(
-							'post_title'  => $title,
-							'post_type'   => $this->post_type,
-							'post_status' => 'draft',
-							'post_parent' => $post->ID,
-						) );
-						wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
-						$page = get_post( $page_id );
-						$this->no_recursion = false;
-					}
+					$this->no_recursion = true;
+					$page_id = wp_insert_post( array(
+						'post_title'  => $title,
+						'post_type'   => $this->post_type,
+						'post_status' => 'draft',
+						'post_parent' => $post->ID,
+					) );
+					wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
+					$page = get_post( $page_id );
+					$this->no_recursion = false;
+
 
 					$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
 					$answer_meta['_cftp_dt_answer_type']  = $answer_type;
