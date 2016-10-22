@@ -249,7 +249,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 			),
 			'query_var'          => 'help', // @TODO: is this the best qv name?
 			'delete_with_user'   => false,
-			'supports'           => array( 'title', 'editor', 'page-attributes' ),
+			'supports'           => array( 'title', 'editor', 'page-attributes', 'custom-fields' ),
 		);
 		$args = apply_filters( 'cftp_dt_cpt_args', $args );
 		$cpt = register_post_type( $this->post_type, $args );
