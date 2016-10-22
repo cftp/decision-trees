@@ -2,7 +2,7 @@
 
 <?php if ( $start ) : ?>
 	<div class="cftp-dt-restart">
-		<a href="<?php echo get_permalink( $start->ID ); ?>">restart</a>
+		<a href="<?php echo get_permalink( $start->ID ); ?>"><?php esc_html_e( 'restart', 'cftp_dt' ); ?></a>
 	</div>
 <?php endif; ?>
 
@@ -20,7 +20,7 @@
 			<li class="cftp_dt_prev_answer">
 				<h3 class="cftp-dt-node-title"><?php echo $previous_answer_parent->post_title; ?></h3>
 				<p class="cftp-dt-answer-value"><?php echo $answer->get_answer_value(); ?></p>
-				<a href="<?php echo $provider->get_edit_answer_url( $answer ); ?>">change this answer</a>
+				<a href="<?php echo $provider->get_edit_answer_url( $answer ); ?>"><?php esc_html_e( 'change this answer', 'cftp_dt' ); ?></a>
 			</li>
 	<?php endforeach; ?>
 
