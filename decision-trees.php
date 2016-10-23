@@ -105,6 +105,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'action_admin_enqueue_scripts' ) );
 		add_action( 'admin_menu',            array( $this, 'action_admin_menu' ) );
 		add_action( 'admin_notices',         array( $this, 'action_admin_notices' ) );
+		add_action( 'plugins_loaded', 		 array( $this, 'dt_init' ) );
 
 		# Filters
 		add_filter( 'the_content',           array( $this, 'filter_the_content' ) );
@@ -629,6 +630,11 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 
 		return $this->answer_providers;
 
+	}
+
+	function dt_init() {
+		$plugin_dir = basename(dirname(__FILE__));
+		load_plugin_textdomain( 'cftp_dt', false, $plugin_dir );
 	}
 
 }

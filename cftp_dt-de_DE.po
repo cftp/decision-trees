@@ -1,0 +1,153 @@
+# Copyright (C) 2016 Decision Trees
+# This file is distributed under the same license as the Decision Trees package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Decision Trees 1.4\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/decision-trees\n"
+"POT-Creation-Date: 2016-10-23 02:17+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-10-23 02:27+0200\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.11\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: de\n"
+
+#: class-answers-simple.php:68 class-answers-simple.php:83
+msgid "Answer link text"
+msgstr "Antwortlink Text"
+
+#: class-plugin.php:135
+msgid ""
+"This plugin template could not be found, perhaps you need to hook "
+"`sil_plugins_dir` and `sil_plugins_url`: %s"
+msgstr ""
+"Dieses Plugin Template konnte nicht gefunden werden, vielleicht müssen "
+"`sil_plugins_dir` und `sil_plugins_url` verbunden werden: %s"
+
+#: decision-trees.php:122
+msgid "Answer added."
+msgstr "Antwort hinzugefügt"
+
+#: decision-trees.php:222 decision-trees.php:225 decision-trees.php:237
+msgid "Decision Node"
+msgstr "Entscheidungsknoten"
+
+#: decision-trees.php:223
+msgctxt "add new on admin bar"
+msgid "Decision Node"
+msgstr "Entscheidungsknoten [ Zur Admin Leiste neu hinzufügen]"
+
+#. Plugin Name of the plugin/theme
+#: decision-trees.php:224 decision-trees.php:236
+msgid "Decision Trees"
+msgstr "Entscheidungsbäume"
+
+#: decision-trees.php:226
+msgid "Add New Node"
+msgstr "Neuen Knoten hinzufügen"
+
+#: decision-trees.php:227
+msgid "Add New Decision Node"
+msgstr "Neuen Entscheidungsknoten hinzufügen"
+
+#: decision-trees.php:228
+msgid "Edit Decision Node"
+msgstr "Entscheidungsknoten bearbeiten"
+
+#: decision-trees.php:229
+msgid "New Decision Node"
+msgstr "Neuen Entscheidungsknoten"
+
+#: decision-trees.php:230
+msgid "View Decision Node"
+msgstr "Entscheidungsknoten ansehen"
+
+#: decision-trees.php:231
+msgid "Search Decision Nodes"
+msgstr "Entscheidungsknoten suchen"
+
+#: decision-trees.php:232
+msgid "No nodes found."
+msgstr "Keine Konten gefunden."
+
+#: decision-trees.php:233
+msgid "No nodes found in Trash."
+msgstr "Keine Knoten im Papierkorb gefunden."
+
+#: decision-trees.php:234
+msgid "Parent Decision Node:"
+msgstr "Elternentscheidungsknoten"
+
+#: decision-trees.php:235
+msgid "All Decision Nodes"
+msgstr "Alle Entscheidungsknoten"
+
+#: decision-trees.php:264 decision-trees.php:265
+msgid "Visualise Nodes"
+msgstr "Knoten visualisieren"
+
+#: decision-trees.php:530
+msgid "Answers"
+msgstr "Antworten"
+
+#: templates/content-with-history.php:5
+msgid "restart"
+msgstr "Neustart"
+
+#: templates/content-with-history.php:23
+msgid "change this answer"
+msgstr "Ändern der Antwort"
+
+#: templates-admin/meta-box-answers.php:7
+msgid ""
+"Tip: as this is the first decision node in your tree, use it to orient your "
+"visitor and then add a single answer with link text similar to \"start\". "
+"The decision tree proper will then start on the second node."
+msgstr ""
+"Tipp: Benutze den ersten Entscheidungsknoten im Baum um den Besuchern bei "
+"der Orientierung zu helfen und füge eine einzelne Antwort mit einem Link "
+"Text wie \"Start\" hinzu. Der Entscheidungsbaum startet dann mit dem "
+"zweiten Knoten."
+
+#: templates-admin/meta-box-answers.php:12
+msgid ""
+"Tip: phrase the answer link text as a statement, e.g. \"It has six legs.\""
+msgstr ""
+"Tipp: Schreibe den Antworttext als eine Aussage wie \"Es hat sechs Beine\""
+
+#: templates-admin/meta-box-answers.php:17
+msgid "Add An Answer"
+msgstr "Eine Antwort hinzufügen"
+
+#: templates-admin/meta-box-answers.php:26 templates-admin/visualise.php:59
+msgid "Answer page title"
+msgstr "Antwort Seitentitel"
+
+#: templates-admin/visualise.php:4
+msgid "Decision Tree Nodes"
+msgstr "Entscheidungsbaumknoten"
+
+#: templates-admin/visualise.php:65
+msgid "Add &raquo;"
+msgstr "Hinzufügen &raquo;"
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/cftp/decision-trees"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Provides a custom post type to create decision trees in WordPress"
+msgstr ""
+"Stellt einen Custom Post Type zur Erstellung von Entscheidungsbäumen in "
+"Wordpress zur Verfügung"
+
+#. Author of the plugin/theme
+msgid "Code for the People"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://codeforthepeople.com/"
+msgstr ""
