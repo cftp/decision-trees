@@ -105,6 +105,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'action_admin_enqueue_scripts' ) );
 		add_action( 'admin_menu',            array( $this, 'action_admin_menu' ) );
 		add_action( 'admin_notices',         array( $this, 'action_admin_notices' ) );
+		add_action( 'plugins_loaded', 		 array( $this, 'dt_init' ) );
 
 		# Filters
 		add_filter( 'the_content',           array( $this, 'filter_the_content' ) );
@@ -169,20 +170,19 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 			$answer_meta = array();
 
 			$title = trim( $answer['page_title'] );
-			$page  = get_page_by_title( $title, OBJECT, $this->post_type );
 
-			if ( !$page ) {
-				$this->no_recursion = true;
-				$page_id = wp_insert_post( array(
-					'post_title'  => $title,
-					'post_type'   => $this->post_type,
-					'post_status' => 'draft',
-					'post_parent' => $post->ID,
-				) );
-				wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
-				$page = get_post( $page_id );
-				$this->no_recursion = false;
-			}
+
+			$this->no_recursion = true;
+			$page_id = wp_insert_post( array(
+				'post_title'  => $title,
+				'post_type'   => $this->post_type,
+				'post_status' => 'draft',
+				'post_parent' => $post->ID,
+			) );
+			wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
+			$page = get_post( $page_id );
+			$this->no_recursion = false;
+
 
 			$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
 			$answer_meta['_cftp_dt_answer_type']  = $answer_type;
@@ -250,7 +250,7 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 			),
 			'query_var'          => 'help', // @TODO: is this the best qv name?
 			'delete_with_user'   => false,
-			'supports'           => array( 'title', 'editor', 'page-attributes' ),
+			'supports'           => array( 'title', 'editor', 'page-attributes', 'custom-fields' ),
 		);
 		$args = apply_filters( 'cftp_dt_cpt_args', $args );
 		$cpt = register_post_type( $this->post_type, $args );
@@ -406,20 +406,18 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 					$answer_meta = array();
 
 					$title = trim( $answer['page_title'] );
-					$page  = get_page_by_title( $title, OBJECT, $this->post_type );
 
-					if ( !$page ) {
-						$this->no_recursion = true;
-						$page_id = wp_insert_post( array(
-							'post_title'  => $title,
-							'post_type'   => $this->post_type,
-							'post_status' => 'draft',
-							'post_parent' => $post->ID,
-						) );
-						wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
-						$page = get_post( $page_id );
-						$this->no_recursion = false;
-					}
+					$this->no_recursion = true;
+					$page_id = wp_insert_post( array(
+						'post_title'  => $title,
+						'post_type'   => $this->post_type,
+						'post_status' => 'draft',
+						'post_parent' => $post->ID,
+					) );
+					wp_update_post( array( 'ID' => $page_id, 'post_name' => sanitize_title_with_dashes( $answer['text'] ) ) );
+					$page = get_post( $page_id );
+					$this->no_recursion = false;
+
 
 					$answer_meta['_cftp_dt_answer_value'] = $answer['text'];
 					$answer_meta['_cftp_dt_answer_type']  = $answer_type;
@@ -632,6 +630,11 @@ class CFTP_Decision_Trees extends CFTP_DT_Plugin {
 
 		return $this->answer_providers;
 
+	}
+
+	function dt_init() {
+		$plugin_dir = basename(dirname(__FILE__));
+		load_plugin_textdomain( 'cftp_dt', false, $plugin_dir );
 	}
 
 }
